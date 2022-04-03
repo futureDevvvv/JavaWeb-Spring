@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.last.prj.reserv.service.ReservCountMapper">
+
+<select id="reservCountList" resultType="com.last.prj.reserv.service.ReservCountVO">
+	SELECT * FROM RESERVCOUNT
+</select>
+
+<select id="reservDelCheck" parameterType="com.last.prj.reserv.service.ReservCountVO" resultType="com.last.prj.reserv.service.ReservCountVO">
+	SELECT * FROM RESERVCOUNT
+	WHERE P_ID = #{p_id}
+	AND RESERV_DATE = #{reserv_date}
+</select>
+
+<!-- 예약중복체크 -->
+<select id="reservCountSelect" resultType="com.last.prj.reserv.service.ReservCountVO">
+	SELECT * FROM RESERVCOUNT
+	WHERE RESERV_DATE BETWEEN #{start_date} AND #{end_date}
+	<!-- AND   RESERV_TIME = #{reserv_time} -->
+	AND   P_ID = #{p_id}
+</select>
+<!-- 예약등록체크할 값 등록 -->
+<insert id="reservCountInsert" parameterType="com.last.prj.reserv.service.ReservCountVO">
+	<selectKey keyProperty="reserv_count" resultType="int" order="BEFORE">
+		 SELECT NVL(MAX(RESERV_COUNT) +1 , 1) AS RESERV_COUNT FROM RESERVCOUNT
+	</selectKey>
+	
+	INSERT INTO RESERVCOUNT (reserv_count,reserv_date,reserv_time,p_id,start_date,end_date)
+	VALUES (#{reserv_count},#{reserv_date},#{reserv_time},#{p_id},#{start_date},#{end_date})
+</insert>
+<!-- 예약번호 업데이트 시킵시다 -->
+<update id="countUpdate">
+	UPDATE RESERVCOUNT
+	SET R_NO = #{r_no}
+	
+</update>
+<!-- 예약승인거절시 해당 체크값 제거 -->
+<delete id="countDelete">
+	DELETE FROM RESERVCOUNT
+	WHERE P_id = #{p_id}
+	AND RESERV_DATE = #{reserv_date}
+	AND RESERV_TIME = #{reserv_time}
+</delete>
+
+
+</mapper>
